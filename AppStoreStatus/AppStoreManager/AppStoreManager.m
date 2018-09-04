@@ -41,8 +41,20 @@
     NSString *currentVersion = [NSBundle mainBundle].infoDictionary[@"CFBundleShortVersionString"]; // 就是在info.plist里面的 version
     // 取得AppStore信息
     NSString *url = [[NSString alloc] initWithFormat:@"http://itunes.apple.com/lookup?id=%@", appID];
-    url = [url stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
     
+    NSString *version = [UIDevice currentDevice].systemVersion;
+    if (version.doubleValue >= 9.0) {
+        // iOS 9 及其以上系统运行
+        NSCharacterSet *set = [NSCharacterSet URLHostAllowedCharacterSet];
+        url = [url stringByAddingPercentEncodingWithAllowedCharacters:set];
+    }
+    else
+    {
+        url = [url stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+    }
+
+    
+   
     [self.manager  GET:url parameters:nil progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
         NSLog(@"responseObject --- %@", responseObject);
         NSString * AppStoreVersionG;
@@ -81,4 +93,7 @@
 
     }];
 }
+
+
+
 @end
